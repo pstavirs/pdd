@@ -1,0 +1,193 @@
+<ui version="4.0" >
+ <class>HexDumpEdit</class>
+ <widget class="QWidget" name="HexDumpEdit" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>528</width>
+    <height>420</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" >
+   <property name="spacing" >
+    <number>0</number>
+   </property>
+   <property name="leftMargin" >
+    <number>0</number>
+   </property>
+   <property name="topMargin" >
+    <number>0</number>
+   </property>
+   <property name="rightMargin" >
+    <number>0</number>
+   </property>
+   <property name="bottomMargin" >
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QFrame" name="frame" >
+     <property name="frameShape" >
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow" >
+      <enum>QFrame::Plain</enum>
+     </property>
+     <layout class="QHBoxLayout" >
+      <property name="spacing" >
+       <number>0</number>
+      </property>
+      <property name="leftMargin" >
+       <number>0</number>
+      </property>
+      <property name="topMargin" >
+       <number>0</number>
+      </property>
+      <property name="rightMargin" >
+       <number>0</number>
+      </property>
+      <property name="bottomMargin" >
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QTextEdit" name="teOffset" >
+        <property name="enabled" >
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize" >
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font" >
+         <font>
+          <family>Courier New</family>
+         </font>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="verticalScrollBarPolicy" >
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy" >
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="lineWrapMode" >
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line" >
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="teInput" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+          <horstretch>100</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font" >
+         <font>
+          <family>Courier New</family>
+         </font>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="verticalScrollBarPolicy" >
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="lineWrapMode" >
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="acceptRichText" >
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_2" >
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="teAscii" >
+        <property name="enabled" >
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize" >
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="font" >
+         <font>
+          <family>Courier New</family>
+         </font>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="horizontalScrollBarPolicy" >
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="lineWrapMode" >
+         <enum>QTextEdit::NoWrap</enum>
+        </property>
+        <property name="readOnly" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
