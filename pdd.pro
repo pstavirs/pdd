@@ -21,3 +21,11 @@ SOURCES = \
 	psmlhandler.cpp \
 	main.cpp \
 	settings.cpp
+
+QMAKE_EXTRA_TARGETS += revtarget
+PRE_TARGETDEPS      += version.h
+revtarget.target     = version.h
+revtarget.commands   = @echo "const char *version = \"0.1\";" \
+                             "const char *revision = \"$(shell svnversion .)\";" > $$revtarget.target
+revtarget.depends = $$SOURCES $$HEADERS $$FORMS
+

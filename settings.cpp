@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <QSettings>
 #include <QMessageBox>
 
+#include "version.h"
 #include "settings.h"
 
 extern QSettings *qAppSettings;
@@ -31,7 +32,7 @@ Settings::Settings(QWidget *parent, Qt::WindowFlags f)
 	: QDialog(parent, f)
 {
 	setupUi(this);
-	lblBuildId->setText(QString("Ver 0.0\n%1 %2").arg(__DATE__).arg(__TIME__));
+	lblBuildId->setText(QString("Ver %1 Rev %2").arg(version).arg(revision));
 
 	rbWireshark->setChecked(
 		qAppSettings->value("Sniffer").toString() == "Wireshark");
