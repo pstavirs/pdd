@@ -1,0 +1,122 @@
+<ui version="4.0" >
+ <class>PktView</class>
+ <widget class="QDialog" name="PktView" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>678</width>
+    <height>523</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Packet Dump Decode</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="pdd.qrc" >:/icons/icons/pdd_icon.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" >
+   <item>
+    <widget class="QFrame" name="frame" >
+     <property name="frameShape" >
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow" >
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" >
+      <item>
+       <widget class="QToolButton" name="tbDecode" >
+        <property name="text" >
+         <string>Decode</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="pdd.qrc" >:/icons/icons/decode.png</iconset>
+        </property>
+        <property name="toolButtonStyle" >
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="toolButton_3" >
+        <property name="enabled" >
+         <bool>false</bool>
+        </property>
+        <property name="text" >
+         <string>Format</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="pdd.qrc" >:/icons/icons/format.png</iconset>
+        </property>
+        <property name="toolButtonStyle" >
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_3" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer>
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" >
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="Line" name="line_2" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbSettings" >
+        <property name="text" >
+         <string>Settings</string>
+        </property>
+        <property name="icon" >
+         <iconset resource="pdd.qrc" >:/icons/icons/settings.png</iconset>
+        </property>
+        <property name="toolButtonStyle" >
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QTreeView" name="tvPktTree" />
+     <widget class="HexDumpEdit" name="teInputDump" />
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HexDumpEdit</class>
+   <extends>QTextEdit</extends>
+   <header location="global" >hexdumpedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="pdd.qrc" />
+ </resources>
+ <connections/>
+</ui>
