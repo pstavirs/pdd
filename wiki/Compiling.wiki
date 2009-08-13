@@ -1,0 +1,9 @@
+#summary How to checkout the source and compile/build
+
+= Pre-requisites =
+  * QT4
+
+= Steps =
+  # Checkout the source code using instructions on the "Source" tab
+  # Run 'qmake'
+  # Run 'make'
