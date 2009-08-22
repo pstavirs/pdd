@@ -65,9 +65,11 @@ int main(int argc, char *argv[])
 
 	pktView = new PktView;
 	pktView->snifferVerified(verified);
+	pktView->setWindowFlags(
+		  Qt::WindowMaximizeButtonHint 
+		| Qt::WindowMinimizeButtonHint);
     pktView->show();
     status = app.exec();
-
 	delete qAppSettings;
 
 	return status;

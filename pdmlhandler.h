@@ -41,6 +41,7 @@ private:
     QStandardItem		*currentItem;
 
 	QString	_currentText;
+	QString	lastElement;
 	int 	packetCount;
 	bool	skip;
 };

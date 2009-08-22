@@ -56,11 +56,20 @@ bool PdmlHandler::startElement(const QString & /* namespaceURI */,
 		}
 		else 
 		{
-			item = new QStandardItem(attributes.value("showname"));
-			item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-			currentItem->appendRow(item);
-			currentItem = item;
-			//qDebug("ITEM(%p) --> %s", item, attributes.value("showname").toAscii().constData());
+			QString		val;
+			val = attributes.value("showname");
+			if (val.isEmpty())
+				val = attributes.value("show");
+			if (!val.isEmpty())
+			{
+				item = new QStandardItem(val);
+				item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+				currentItem->appendRow(item);
+				currentItem = item;
+				//qDebug("ITEM(%p) --> %s", item, attributes.value("showname").toAscii().constData());
+			}
+			else
+				skip = true;
 		}
 	}
     return true;
@@ -88,8 +97,11 @@ bool PdmlHandler::endElement(const QString & /* namespaceURI */,
 		if (skip)
 			skip = false;
 		else 
+		{
+			lastElement = qName + currentItem->text().section(':',0,0);
 			currentItem = _model->itemFromIndex(
 				_model->indexFromItem(currentItem).parent());
+		}
 	}
 
     return true;
@@ -97,13 +109,20 @@ bool PdmlHandler::endElement(const QString & /* namespaceURI */,
 
 bool PdmlHandler::fatalError(const QXmlParseException &exception)
 {
+	QString extra;
+
     qDebug("%s", __FUNCTION__);
-    QMessageBox::warning(0, QObject::tr("PDML Handler"),
-                         QObject::tr("Parse error at line %1, column "
-                                     "%2:\n%3.")
+	if (exception.message() == "tag mismatch" && lastElement == "fieldData")
+		extra = "\nAre you using an old version of Wireshark? If so, try using a newer version. Alternatively, view the packet dump decode in Wireshark by clicking the \"External\" button.";
+
+    QMessageBox::warning(0, QObject::tr("PDML Parser"),
+                         QObject::tr("XML parse error for packet %1 "
+							"at line %2, column %3:\n    %4\n%5")
+                         .arg(packetCount+1)
                          .arg(exception.lineNumber())
                          .arg(exception.columnNumber())
-                         .arg(exception.message()));
+                         .arg(exception.message())
+						 .arg(extra));
     return false;
 }
 

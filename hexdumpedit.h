@@ -27,6 +27,7 @@ class HexDumpEdit : public QWidget, Ui::HexDumpEdit
 public:
 	HexDumpEdit(QWidget* parent = 0);
 	QString toPlainText() const;
+	void setFocus(Qt::FocusReason reason);
 
 signals:
 	void dumpEmpty(bool isEmpty);
@@ -36,10 +37,18 @@ private:
 	bool	_isEmpty;
 	QString	_text;
 
-	bool isValid(QString str, QByteArray &ba) const;
+	bool inline isHexDigit(QChar c) const
+		{if (((c >= '0') && (c <= '9')) || 
+			 ((c >= 'a') && (c <= 'f')) || 
+			 ((c >= 'A') && (c <= 'F')))
+				return true; else return false; }
+	bool inline isWhitespace(QChar c) const
+		{if ((c == ' ') || (c == '\t')) return true; else return false; }
 	bool inline isPrintable(char c) const
 		{if ((c > 48) && (c < 126)) return true; else return false; }
+
 	QString asciiDump(QByteArray ba) const;
+
 
 private slots:
 	void on_teInput_textChanged();
