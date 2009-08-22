@@ -57,48 +57,9 @@ QString HexDumpEdit::toPlainText() const
 	return _text;
 }
 
-bool HexDumpEdit::isValid(QString str, QByteArray &ba) const
+void HexDumpEdit::setFocus(Qt::FocusReason reason)
 {
-	bool isOk;
-	QStringList l;
-	QByteArray v;
-
-	ba.clear();
-	l = str.split(' ', QString::SkipEmptyParts);
-
-	foreach(QString s, l)
-	{
-		ulong x;
-
-		x = s.toULong(&isOk, BASE_HEX);
-		if (isOk)
-		{
-			if (x <= 0xFF)
-			{
-				v.resize(1);
-				qToBigEndian((uchar) x, (uchar*) v.data());
-			}
-			else if (x <= 0xFFFF)
-			{
-				v.resize(2);
-				qToBigEndian((ushort) x, (uchar*) v.data());
-			}
-			else
-			{
-				v.resize(4);
-				qToBigEndian((ulong) x, (uchar*) v.data());
-			}
-
-			ba.append(v);
-		}
-		else
-			return false;
-	}
-
-	if (ba.size())
-		return true;
-	else
-		return false;
+	teInput->setFocus(reason);
 }
 
 QString HexDumpEdit::asciiDump(QByteArray ba) const
@@ -146,7 +107,65 @@ void HexDumpEdit::on_teInput_textChanged()
 #endif
 	foreach (QString s, li)
 	{
-		if (isValid(s, ba))
+		int i, valid;
+		QStringList l;
+		
+		// Zero Pad, if reqd.
+		l = s.split(QRegExp("[ \t]"), QString::SkipEmptyParts);
+		for(i=0; i < l.size(); i++)
+		{
+			if (l.at(i).size() & 0x01)
+				l[i].prepend('0');
+		}
+		s = l.join(" ");
+
+		// Convert the hexdump line to a ByteArray, validating it in
+		// the process
+		valid = 1;
+		i=0;
+		ba.clear();
+		while (i < s.size())
+		{
+			QChar x, y;
+			unsigned char n;
+			bool isOk;
+
+			x = s.at(i);
+
+			if (isWhitespace(x)) { i++; continue; } 
+			if (!isHexDigit(x)) { valid = 0; break; }
+
+			if ((i+1) < s.size())
+			{
+				y = s.at(i+1);
+				if (isWhitespace(y))
+					y = ' '; 
+				else
+					if (!isHexDigit(y)) { valid = 0; break; }
+			}
+			else
+				y = ' ';
+
+			n = QString().append(x).append(y).toUShort(&isOk, BASE_HEX);
+
+			qDebug("n = %d", n);
+			qDebug("%c(%d)", x.toAscii(), x.toAscii());
+			qDebug("%c(%d)", y.toAscii(), y.toAscii());
+
+			Q_ASSERT(isOk == true);
+
+			ba.append(n);
+
+			i+=2;
+			
+		}
+
+		// An empty line is not valid
+		if (ba.size() == 0) valid = 0;
+
+
+		// For a valid hexdump line, do the offset and ascii dump stuff
+		if (valid)
 		{
 			QString ofsStr, dumpStr, asciiStr;
 
@@ -177,10 +196,10 @@ void HexDumpEdit::on_teInput_textChanged()
 			ofs = 0;
 		}
 	}
-
 	teOffset->setPlainText(lo.join(QString('\n')));
 	teAscii->setPlainText(la.join(QString('\n')));
 
+	// Emit Signals, if reqd.
 	if (_isEmpty)
 	{
 		if(t.size()) 

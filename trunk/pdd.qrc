@@ -7,5 +7,7 @@
         <file>icons/pdd_icon.png</file>
         <file>icons/pdd_logo.png</file>
         <file>icons/settings.png</file>
+        <file>icons/view_external.png</file>
+        <file>icons/view_xml.png</file>
     </qresource>
 </RCC>

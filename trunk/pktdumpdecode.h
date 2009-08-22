@@ -35,14 +35,21 @@ public:
 
 public slots:
 	void on_tbDecode_clicked();
+	void on_tbViewExternal_clicked();
+	void on_tbViewXml_clicked();
 	void on_tbSettings_clicked();
 	void snifferVerified(bool isVerified);
 
 private:
+	enum ViewType { vw_none, vw_internal, vw_external, vw_xml };
+
+	ViewType		view;
 	QString			t2pProg, t2pExtraArgs;
 	QString			tsProg, tsExtraArgs;
+	QString			extProg;
 	QString			logFile;
 	QTemporaryFile	*pcapFile;
+	QTemporaryFile	*xmlFile;
 	QProcess		t2p;
 	QProcess		ts;
 	bool			inDetailedDecode;
@@ -55,6 +62,8 @@ private:
 	PdmlHandler			*pdml;
 
 	bool				isFirstTime;
+
+	void start_t2p();
 
 private slots:
 	void when_t2p_started();

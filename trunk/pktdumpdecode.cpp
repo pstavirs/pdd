@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include "pktdumpdecode.h"
 #include "settings.h"
 
+#define Q_UNREACHABLE() Q_ASSERT(1 == 0)
+
 extern QSettings *qAppSettings;
 
 PktView::PktView()
@@ -38,10 +40,11 @@ PktView::PktView()
 	logFile = QString("%1/%2")
 		.arg(QCoreApplication::applicationDirPath())
 		.arg("pdd.log");
+
+	view = vw_none;
+
 	packetModel = new QStandardItemModel;
-	psml = new PsmlHandler(packetModel);
-	pdml = new PdmlHandler(packetModel);
-	xmlReader = new QXmlSimpleReader;
+	//xmlReader = new QXmlSimpleReader;
 
 	setupUi(this);
 	tvPktTree->setModel(packetModel);
@@ -50,8 +53,10 @@ PktView::PktView()
 
 	pcapFile = new QTemporaryFile;
 	if (!pcapFile->open())
-		qFatal("Unable to open temp file");
+		qFatal("Unable to open temp pcap file");
 	qDebug("pcap file = %s", pcapFile->fileName().toAscii().constData());
+
+	xmlFile = NULL;
 
 	connect(&t2p, SIGNAL(started()), this, SLOT(when_t2p_started()));
 	connect(&t2p, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(when_t2p_finished()));
@@ -59,15 +64,18 @@ PktView::PktView()
 	connect(&ts, SIGNAL(started()), this, SLOT(when_ts_started()));
 	connect(&ts, SIGNAL(readyRead()), this, SLOT(when_ts_readyRead()));
 	connect(&ts, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(when_ts_finished()));
+
+	teInputDump->setFocus(Qt::OtherFocusReason);
 }
 
 PktView::~PktView()
 {
 	pcapFile->close();
 	delete pcapFile;
+	if (xmlFile)
+		delete xmlFile;
 
-	delete xmlReader;
-	delete psml;
+	//delete xmlReader;
 	delete packetModel;
 }
 
@@ -87,10 +95,17 @@ void PktView::snifferVerified(bool isVerified)
 	{
 		t2pProg = qAppSettings->value("SnifferDir").toString()+"/text2pcap.exe";
 		tsProg = qAppSettings->value("SnifferDir").toString()+"/";
+		extProg = qAppSettings->value("SnifferDir").toString()+"/";
 		if (qAppSettings->value("Sniffer").toString() == "Wireshark")
+		{
 			tsProg.append("tshark");
+			extProg.append("wireshark");
+		}
 		else if (qAppSettings->value("Sniffer").toString() == "Ethereal")
+		{
 			tsProg.append("tethereal");
+			extProg.append("ethereal");
+		}
 		else
 			qFatal("No sniffer selected");
 
@@ -106,11 +121,10 @@ void PktView::snifferVerified(bool isVerified)
 	tbDecode->setEnabled(isVerified);
 }
 
-void PktView::on_tbDecode_clicked()
+void PktView::start_t2p()
 {
 	qDebug("%s", __FUNCTION__);
 
-	tbDecode->setDisabled(true);
 	tvPktTree->setDisabled(true);
 	tvPktTree->show();
 
@@ -124,87 +138,238 @@ void PktView::on_tbDecode_clicked()
 			"Text2PcapExtraArgs").toString())) << "-" << pcapFile->fileName());
 }
 
+void PktView::on_tbDecode_clicked()
+{
+	qDebug("%s", __FUNCTION__);
+
+	view = vw_internal;
+	tbDecode->setDisabled(true);
+	start_t2p();
+}
+
+void PktView::on_tbViewExternal_clicked()
+{
+	qDebug("%s", __FUNCTION__);
+
+	view = vw_external;
+	tbViewExternal->setDisabled(true);
+	start_t2p();
+}
+
+void PktView::on_tbViewXml_clicked()
+{
+	qDebug("%s", __FUNCTION__);
+
+	view = vw_xml;
+	tbViewXml->setDisabled(true);
+	start_t2p();
+}
+
 void PktView::when_t2p_started()
 {
 	QByteArray ba;
 
-	qDebug("... text2pcap running");
-	ba.append(teInputDump->toPlainText());
-	qDebug("Writing %d dump bytes to text2pcap", ba.size());
-	if (ba.size())
-		t2p.write(ba);
-	qDebug("Finished writing to text2pcap");
-	t2p.closeWriteChannel();
+	qDebug("... text2pcap running (view = %d)", view);
+
+	switch (view)
+	{
+		case vw_internal:
+		case vw_external:
+		case vw_xml:
+			ba.append(teInputDump->toPlainText());
+			qDebug("Writing %d dump bytes to text2pcap", ba.size());
+			if (ba.size())
+				t2p.write(ba);
+			qDebug("Finished writing to text2pcap");
+			t2p.closeWriteChannel();
+			break;
+		default:
+			Q_UNREACHABLE();
+	}
 }
 
 void PktView::when_t2p_finished()
 {
-	QString prog;
+	qDebug("text2pcap finished (view = %d)", view);
 
-	qDebug("text2pcap finished");
-
-	inDetailedDecode = false;
 	packetModel->clear();
-	xmlSource = new QXmlInputSource(&ts);
-	xmlReader->setContentHandler(psml);
-	xmlReader->setErrorHandler(psml);
 
-	ts.setStandardErrorFile(logFile, QIODevice::Append);
-	qDebug("Starting %s ...", tsProg.toAscii().constData());
+	switch (view)
+	{
+		case vw_internal:
+			ts.readAll();
+			inDetailedDecode = false;
+			xmlSource = new QXmlInputSource(&ts);
+			xmlSource->reset();
+			xmlReader = new QXmlSimpleReader;
+			psml = new PsmlHandler(packetModel);
+			xmlReader->setContentHandler(psml);
+			xmlReader->setErrorHandler(psml);
 
-	ts.start(tsProg, QStringList(qAppSettings->value(
-		"TsharkExtraArgs").toString()) << "-Tpsml" << QString("-r%1").arg(
-		pcapFile->fileName()));
+			ts.setStandardErrorFile(logFile, QIODevice::Append);
+			qDebug("Starting %s ...", tsProg.toAscii().constData());
+
+			ts.start(tsProg, QStringList(qAppSettings->value(
+				"TsharkExtraArgs").toString()) << "-Tpsml" << QString("-r%1").arg(
+				pcapFile->fileName()));
+			break;
+		case vw_external:
+			ts.setStandardErrorFile(logFile, QIODevice::Append);
+			qDebug("Starting %s ...", extProg.toAscii().constData());
+
+			ts.start(extProg, QStringList() << QString("-r%1").arg(
+				pcapFile->fileName()));
+			break;
+		case vw_xml:
+			//ts.setStandardOutputFile(xmlFile->fileName(), QIODevice::Append);
+			if (xmlFile)
+				delete xmlFile;
+			xmlFile = new QTemporaryFile;
+			if (!xmlFile->open())
+				qFatal("Unable to open temp xml file");
+			qDebug("xml file = %s", xmlFile->fileName().toAscii().constData());
+
+			ts.readAll();
+			qDebug("Starting %s ...", tsProg.toAscii().constData());
+
+			ts.start(tsProg, QStringList(qAppSettings->value(
+				"TsharkExtraArgs").toString()) << "-Tpdml" << QString("-r%1").arg(
+				pcapFile->fileName()));
+			break;
+		default:
+			Q_UNREACHABLE();
+	}
 }
 
 void PktView::when_ts_started()
 {
+	qDebug("tshark/wireshark started (view = %d)", view);
 	qDebug("%s (%d)", tsProg.toAscii().constData(), inDetailedDecode);
-	isFirstTime = true;
+
+	switch(view)
+	{
+		case vw_internal:
+			isFirstTime = true;
+			break;
+		case vw_external:
+			tbViewExternal->setEnabled(true);
+			view = vw_none;
+			break;
+		case vw_xml:
+			break;
+		default:
+			Q_UNREACHABLE();
+	}
 }
 
 void PktView::when_ts_readyRead()
 {
 	bool isOk;
 
-	qDebug("%s (%d)", __FUNCTION__, inDetailedDecode);
-	if (isFirstTime)
-	{
-		isOk = xmlReader->parse(xmlSource, true);
-		isFirstTime = false;
-	}
-	else
-		isOk = xmlReader->parseContinue();
+	qDebug("%s (view = %d) inDetailed = %d", __FUNCTION__, view, 
+		inDetailedDecode);
 
-	qDebug("isOk = %d", isOk);
+	switch(view)
+	{
+		case vw_internal:
+			if (isFirstTime)
+			{
+				isOk = xmlReader->parse(xmlSource, true);
+				isFirstTime = false;
+			}
+			else
+				isOk = xmlReader->parseContinue();
+
+			qDebug("isOk = %d", isOk);
+			break;
+		case vw_external:
+			// DO Nothing
+			Q_UNREACHABLE();
+			break;
+		case vw_xml:
+		{
+			char buf[1024];
+			int  n;
+
+			do 
+			{
+				n = ts.read(buf, sizeof(buf));
+				if (n)
+					xmlFile->write(buf, n);
+			} while (n > 0);
+		}
+			break;
+		default:
+			Q_UNREACHABLE();
+	}
 }
 
 void PktView::when_ts_finished()
 {
-	qDebug("%s (%d)", __FUNCTION__, inDetailedDecode);
+	qDebug("%s (view = %d) inDetailed = %d", __FUNCTION__, view, 
+		inDetailedDecode);
 
-	// Finish up reading any data left over
-	while (xmlReader->parseContinue());
-
-	delete xmlSource;
-
-	if (!inDetailedDecode)
+	switch(view)
 	{
-		inDetailedDecode = true;
-		xmlSource = new QXmlInputSource(&ts);
-		xmlReader->setContentHandler(pdml);
-		xmlReader->setErrorHandler(pdml);
-		isFirstTime = true;
+		case vw_internal:
+			// Finish up reading any data left over
+			while (xmlReader->parseContinue());
 
-		ts.start(tsProg, QStringList(qAppSettings->value(
-			"TsharkExtraArgs").toString()) << "-Tpdml" << QString("-r%1").arg(
-			pcapFile->fileName()));
-	}
-	else
-	{
-		tvPktTree->setEnabled(true);
-		tbDecode->setEnabled(true);
-		inDetailedDecode = false;
+
+			if (!inDetailedDecode)
+			{
+				inDetailedDecode = true;
+				isFirstTime = true;
+
+				delete psml;
+				delete xmlReader;
+				delete xmlSource;
+				xmlSource = new QXmlInputSource(&ts);
+				xmlSource->reset();
+				xmlReader = new QXmlSimpleReader;
+				pdml = new PdmlHandler(packetModel);
+				xmlReader->setContentHandler(pdml);
+				xmlReader->setErrorHandler(pdml);
+
+				ts.start(tsProg, QStringList(qAppSettings->value(
+					"TsharkExtraArgs").toString()) << "-Tpdml" << QString("-r%1").arg(
+					pcapFile->fileName()));
+			}
+			else
+			{
+				inDetailedDecode = false;
+				view = vw_none;
+				tvPktTree->setEnabled(true);
+				tbDecode->setEnabled(true);
+				delete pdml;
+				delete xmlReader;
+				delete xmlSource;
+			}
+			break;
+		case vw_external:
+			// Do Nothing!
+			break;
+		case vw_xml:
+		{
+			char buf[1024];
+			int  n;
+
+			do 
+			{
+				n = ts.read(buf, sizeof(buf));
+				if (n)
+					xmlFile->write(buf, n);
+			} while (n > 0);
+			xmlFile->flush();
+
+			view = vw_none;
+			QProcess::startDetached("notepad", QStringList() << xmlFile->fileName());
+			tvPktTree->setEnabled(true);
+			tbViewXml->setEnabled(true);
+		}
+			break;
+		default:
+			break;
 	}
 }
 

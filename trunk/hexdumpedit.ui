@@ -74,6 +74,9 @@
           <family>Courier New</family>
          </font>
         </property>
+        <property name="focusPolicy" >
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="frameShape" >
          <enum>QFrame::NoFrame</enum>
         </property>
@@ -165,6 +168,9 @@
          <font>
           <family>Courier New</family>
          </font>
+        </property>
+        <property name="focusPolicy" >
+         <enum>Qt::NoFocus</enum>
         </property>
         <property name="frameShape" >
          <enum>QFrame::NoFrame</enum>

@@ -39,15 +39,19 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="toolButton_3" >
-        <property name="enabled" >
-         <bool>false</bool>
+       <widget class="Line" name="line_3" >
+        <property name="orientation" >
+         <enum>Qt::Vertical</enum>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="tbViewExternal" >
         <property name="text" >
-         <string>Format</string>
+         <string>External</string>
         </property>
         <property name="icon" >
-         <iconset resource="pdd.qrc" >:/icons/icons/format.png</iconset>
+         <iconset resource="pdd.qrc" >:/icons/icons/view_external.png</iconset>
         </property>
         <property name="toolButtonStyle" >
          <enum>Qt::ToolButtonTextUnderIcon</enum>
@@ -55,7 +59,26 @@
        </widget>
       </item>
       <item>
-       <widget class="Line" name="line_3" >
+       <widget class="QToolButton" name="tbViewXml" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+          <horstretch>255</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text" >
+         <string>   XML   </string>
+        </property>
+        <property name="icon" >
+         <iconset resource="pdd.qrc" >:/icons/icons/view_xml.png</iconset>
+        </property>
+        <property name="toolButtonStyle" >
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line" >
         <property name="orientation" >
          <enum>Qt::Vertical</enum>
         </property>
