@@ -2,7 +2,8 @@
 
 =Downloads=
 ==Binary (Windows 32-bit)==
-Unzip the latest full release - [http://pdd.googlecode.com/files/pdd_full_v0.1r4.zip ver 0.1 rev 4] and then overwrite it with the latest patch release - [http://pdd.googlecode.com/files/pdd_patch_v0.1r6.zip ver 0.1 rev 6]
+# Unzip the latest full release - [http://pdd.googlecode.com/files/pdd_full_v0.1r4.zip ver 0.1 rev 4]
+# Overwrite it with the latest patch release - [http://pdd.googlecode.com/files/pdd_patch_v0.1r6.zip ver 0.1 rev 6]
 
 *NOTE:* Always apply the latest patch for the most up-to-date version containing bugfixes
 
