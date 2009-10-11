@@ -25,7 +25,10 @@ SOURCES = \
 QMAKE_EXTRA_TARGETS += revtarget
 PRE_TARGETDEPS      += version.h
 revtarget.target     = version.h
-revtarget.commands   = @echo "const char *version = \"0.1\";" \
-                             "const char *revision = \"$(shell svnversion .)\";" > $$revtarget.target
+win32:revtarget.commands   = @echo "const char *version = \"0.1\";" \
+	"const char *revision = \"$(shell svnversion .)\";" > $$revtarget.target
+unix:revtarget.commands = @echo "\"const char *version = \\\"0.1\\\";" \
+	"const char *revision = \\\"$(shell svnversion .)\\\";\"" > $$revtarget.target
+
 revtarget.depends = $$SOURCES $$HEADERS $$FORMS
 
