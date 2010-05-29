@@ -18,13 +18,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+#include "settings.h"
+
 #include <QFile>
 #include <QFileDialog>
 #include <QSettings>
 #include <QMessageBox>
 
+#include "common.h"
 #include "version.h"
-#include "settings.h"
 
 extern QSettings *qAppSettings;
 
@@ -44,6 +46,9 @@ Settings::Settings(QWidget *parent, Qt::WindowFlags f)
 		qAppSettings->value("Text2PcapExtraArgs").toString());
 	leTsharkExtraArgs->setText(
 		qAppSettings->value("TsharkExtraArgs").toString());
+
+	leTextViewer->setText(
+		qAppSettings->value("TextViewer").toString());
 }
 
 void Settings::accept()
@@ -54,8 +59,8 @@ void Settings::accept()
 
 	if (rbWireshark->isChecked())
 	{
-		if (QFile::exists(QString("%1/%2").arg(dir).arg("text2pcap.exe")) && 
-			QFile::exists(QString("%1/%2").arg(dir).arg("tshark.exe")))
+		if (QFile::exists(QString("%1/%2").arg(dir).arg("text2pcap"+kExt)) && 
+			QFile::exists(QString("%1/%2").arg(dir).arg("tshark"+kExt)))
 		{
 			qAppSettings->setValue("Sniffer", "Wireshark");
 			qAppSettings->setValue("SnifferDir", dir);
@@ -71,8 +76,8 @@ void Settings::accept()
 	}
 	else if (rbEthereal->isChecked())
 	{
-		if (QFile::exists(QString("%1/%2").arg(dir).arg("text2pcap.exe")) && 
-			QFile::exists(QString("%1/%2").arg(dir).arg("tethereal.exe")))
+		if (QFile::exists(QString("%1/%2").arg(dir).arg("text2pcap"+kExt)) && 
+			QFile::exists(QString("%1/%2").arg(dir).arg("tethereal"+kExt)))
 		{
 			qAppSettings->setValue("Sniffer", "Ethereal");
 			qAppSettings->setValue("SnifferDir", dir);
@@ -96,6 +101,24 @@ void Settings::accept()
 	qAppSettings->setValue("Text2PcapExtraArgs", leText2PcapExtraArgs->text());
 	qAppSettings->setValue("TsharkExtraArgs", leTsharkExtraArgs->text());
 
+	if (!QFile::exists(leTextViewer->text()))
+	{
+		QMessageBox::information(this, "Text Viewer not found", 
+			QString("The text viewer specified '%1' does not exist").
+				arg(leTextViewer->text()));
+		return;
+	}
+
+	if (!(QFile::permissions(leTextViewer->text()) & QFile::ExeUser))
+	{
+		QMessageBox::information(this, "Text Viewer not executable", 
+			QString("The text viewer '%1' does not appear"
+			     	" to be an executable application.")
+					.arg(leTextViewer->text()));
+		return;
+	}
+
+	qAppSettings->setValue("TextViewer", leTextViewer->text());
 	emit settingsVerified(true);
 
 	QDialog::accept();
@@ -110,4 +133,15 @@ void Settings::on_tbBrowse_clicked()
 
 	if (!dir.isEmpty())
 		leSnifferDir->setText(dir);
+}
+
+void Settings::on_tbBrowseFile_clicked()
+{
+	QString prog;
+
+	prog = QFileDialog::getOpenFileName(this, "Select Text Viewer",
+		leTextViewer->text()); 
+
+	if (!prog.isEmpty())
+		leTextViewer->setText(prog);
 }

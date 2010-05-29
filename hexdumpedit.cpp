@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #define BASE_HEX	16
 
 HexDumpEdit::HexDumpEdit(QWidget* parent)
+	: QWidget(parent)
 {
 	int w;
 

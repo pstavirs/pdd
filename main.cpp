@@ -22,13 +22,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <QSettings>
 #include <QMessageBox>
 
+#include "common.h"
 #include "pktdumpdecode.h"
 
 QSettings *qAppSettings;
 
 int main(int argc, char *argv[])
 {
-	bool verified = true;
+	bool snifferVerified = true;
+	bool textViewerVerified = true;
 	int status;
 	PktView *pktView;
     QApplication app(argc, argv);
@@ -37,24 +39,45 @@ int main(int argc, char *argv[])
 		QCoreApplication::applicationDirPath()).arg("pdd.ini"),
 		QSettings::IniFormat);
 
-	if (!qAppSettings->contains("Sniffer") || !qAppSettings->contains("SnifferDir"))
+	if (!qAppSettings->contains("TextViewer"))
 	{
-		// Try to auto-locate Wireshark, then Ethereal otherwise inform user
-		if (QFile::exists("C:/Program Files/Wireshark/tshark.exe") &&
-			QFile::exists("C:/Program Files/Wireshark/text2pcap.exe"))
+		// Try to auto-locate the default text viewer, otherwise inform user
+		if (QFile::exists(kDefaultTextViewer) &&
+				(QFile::permissions(kDefaultTextViewer) & QFile::ExeUser))
 		{
-			qAppSettings->setValue("Sniffer", "Wireshark");
-			qAppSettings->setValue("SnifferDir", "C:/Program Files/Wireshark");
-		}
-		else if (QFile::exists("C:/Program Files/Ethereal/tethereal.exe") &&
-			QFile::exists("C:/Program Files/Ethereal/text2pcap.exe"))
-		{
-			qAppSettings->setValue("Sniffer", "Ethereal");
-			qAppSettings->setValue("SnifferDir", "C:/Program Files/Ethereal");
+			qAppSettings->setValue("TextViewer", kDefaultTextViewer);
 		}
 		else
 		{
-			verified = false;
+			textViewerVerified = false;
+			QMessageBox::information(NULL, "Text Viewer not found",
+			   "Packet Dump Decode could not auto-locate a text viewer"
+			   " application. Please configure location manually in the"
+			   " 'Settings' dialog (You will not be able to decode to"
+			   " XML)\n\nNOTE: Normal decoding will still work!");
+		}
+	}
+
+	if (!qAppSettings->contains("Sniffer") || !qAppSettings->contains("SnifferDir"))
+	{
+		// Try to auto-locate Wireshark, then Ethereal otherwise inform user
+		if (QFile::exists(kDefaultWiresharkDir+"/tshark"+kExt) &&
+			QFile::exists(kDefaultWiresharkDir+"/text2pcap"+kExt) &&
+			QFile::exists(kDefaultWiresharkDir+"/wireshark"+kExt))
+		{
+			qAppSettings->setValue("Sniffer", "Wireshark");
+			qAppSettings->setValue("SnifferDir", kDefaultWiresharkDir);
+		}
+		else if (QFile::exists(kDefaultEtherealDir+"/tethereal"+kExt) &&
+			QFile::exists(kDefaultEtherealDir+"/text2pcap"+kExt) &&
+			QFile::exists(kDefaultEtherealDir+"/ethereal"+kExt))
+		{
+			qAppSettings->setValue("Sniffer", "Ethereal");
+			qAppSettings->setValue("SnifferDir", kDefaultEtherealDir);
+		}
+		else
+		{
+			snifferVerified = false;
 			QMessageBox::information(NULL, "Sniffer not found",
 			   "Packet Dump Decode could not auto-locate either Wireshark"
 			   " or Ethereal. Please configure location manually in the"
@@ -64,7 +87,8 @@ int main(int argc, char *argv[])
 	}
 
 	pktView = new PktView;
-	pktView->snifferVerified(verified);
+	pktView->snifferVerified(snifferVerified);
+	pktView->textViewerVerified(textViewerVerified);
 	pktView->setWindowFlags(
 		  Qt::WindowMaximizeButtonHint 
 		| Qt::WindowMinimizeButtonHint);
