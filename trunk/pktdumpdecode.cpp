@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
+#include "pktdumpdecode.h"
+
 #include <QString>
 #include <QStringList>
 #include <QScrollBar>
@@ -26,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <QHeaderView>
 #include <QSettings>
 
-#include "pktdumpdecode.h"
+#include "common.h"
 #include "settings.h"
 
 #define Q_UNREACHABLE() Q_ASSERT(1 == 0)
@@ -85,6 +87,8 @@ void PktView::on_tbSettings_clicked()
 
 	connect(&settings, SIGNAL(settingsVerified(bool)),
 		this, SLOT(snifferVerified(bool)));
+	connect(&settings, SIGNAL(settingsVerified(bool)),
+		this, SLOT(textViewerVerified(bool)));
 	settings.exec();
 }
 
@@ -93,7 +97,7 @@ void PktView::snifferVerified(bool isVerified)
 	qDebug("Sniffer verified = %d", isVerified);
 	if (isVerified)
 	{
-		t2pProg = qAppSettings->value("SnifferDir").toString()+"/text2pcap.exe";
+		t2pProg = qAppSettings->value("SnifferDir").toString()+"/text2pcap"+kExt;
 		tsProg = qAppSettings->value("SnifferDir").toString()+"/";
 		extProg = qAppSettings->value("SnifferDir").toString()+"/";
 		if (qAppSettings->value("Sniffer").toString() == "Wireshark")
@@ -119,6 +123,13 @@ void PktView::snifferVerified(bool isVerified)
 	}
 
 	tbDecode->setEnabled(isVerified);
+}
+
+void PktView::textViewerVerified(bool isVerified)
+{
+	qDebug("Text Viewer verified = %d", isVerified);
+	textViewerProg = qAppSettings->value("TextViewer").toString();
+	tbViewXml->setEnabled(isVerified);
 }
 
 void PktView::start_t2p()
@@ -363,7 +374,8 @@ void PktView::when_ts_finished()
 			xmlFile->flush();
 
 			view = vw_none;
-			QProcess::startDetached("notepad", QStringList() << xmlFile->fileName());
+			QProcess::startDetached(textViewerProg, 
+					QStringList() << xmlFile->fileName());
 			tvPktTree->setEnabled(true);
 			tbViewXml->setEnabled(true);
 		}

@@ -34,7 +34,7 @@ PsmlHandler::PsmlHandler(QStandardItemModel *model)
 bool PsmlHandler::startElement(const QString & /* namespaceURI */,
 	const QString & /* localName */,
 	const QString &qName,
-	const QXmlAttributes &attributes)
+	const QXmlAttributes & /* attributes */)
 {
     qDebug("%s (%s)", __FUNCTION__, qName.toAscii().constData());
 

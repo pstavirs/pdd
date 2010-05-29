@@ -39,6 +39,7 @@ public slots:
 	void on_tbViewXml_clicked();
 	void on_tbSettings_clicked();
 	void snifferVerified(bool isVerified);
+	void textViewerVerified(bool isVerified);
 
 private:
 	enum ViewType { vw_none, vw_internal, vw_external, vw_xml };
@@ -47,6 +48,7 @@ private:
 	QString			t2pProg, t2pExtraArgs;
 	QString			tsProg, tsExtraArgs;
 	QString			extProg;
+	QString			textViewerProg;
 	QString			logFile;
 	QTemporaryFile	*pcapFile;
 	QTemporaryFile	*xmlFile;

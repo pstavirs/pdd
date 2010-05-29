@@ -1,6 +1,6 @@
 /*
 Packet Dump Decode (pdd) - Decode a packet hex dump
-Copyright (C) Srivats P.
+Copyright (C) 2010 Srivats P.
 
 This file is part of Packet Dump Decode (pdd)
 
@@ -18,23 +18,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include <QDialog>
+#ifndef _COMMON_H
+#define _COMMON_H
 
-#include "ui_settings.h"
+#ifdef Q_OS_WIN32
+const QString kDefaultWiresharkDir = "C:/Program Files/Wireshark/";
+const QString kDefaultEtherealDir = "C:/Program Files/Ethereal/";
+const QString kExt = ".exe";
+const QString kDefaultTextViewer = "C:/Windows/notepad.exe";
+#else
+const QString kDefaultWiresharkDir = "/usr/bin/";
+const QString kDefaultEtherealDir = "/usr/bin/";
+const QString kExt = "";
+const QString kDefaultTextViewer = "/usr/bin/gvim";
+#endif
 
-class Settings : public QDialog, Ui::Settings
-{
-	Q_OBJECT
-public:
-	Settings(QWidget *parent=0, Qt::WindowFlags f=0);
-
-public slots:
-	virtual void accept();
-
-signals:
-	void settingsVerified(bool isVerified);
-
-private slots:
-	void on_tbBrowse_clicked();
-	void on_tbBrowseFile_clicked();
-};
+#endif
