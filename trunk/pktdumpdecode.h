@@ -36,13 +36,14 @@ public:
 public slots:
 	void on_tbDecode_clicked();
 	void on_tbViewExternal_clicked();
+	void on_tbViewText_clicked();
 	void on_tbViewXml_clicked();
 	void on_tbSettings_clicked();
 	void snifferVerified(bool isVerified);
 	void textViewerVerified(bool isVerified);
 
 private:
-	enum ViewType { vw_none, vw_internal, vw_external, vw_xml };
+	enum ViewType { vw_none, vw_internal, vw_external, vw_text, vw_xml };
 
 	ViewType		view;
 	QString			t2pProg, t2pExtraArgs;

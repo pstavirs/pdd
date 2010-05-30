@@ -167,6 +167,15 @@ void PktView::on_tbViewExternal_clicked()
 	start_t2p();
 }
 
+void PktView::on_tbViewText_clicked()
+{
+	qDebug("%s", __FUNCTION__);
+
+	view = vw_text;
+	tbViewText->setDisabled(true);
+	start_t2p();
+}
+
 void PktView::on_tbViewXml_clicked()
 {
 	qDebug("%s", __FUNCTION__);
@@ -186,6 +195,7 @@ void PktView::when_t2p_started()
 	{
 		case vw_internal:
 		case vw_external:
+		case vw_text:
 		case vw_xml:
 			ba.append(teInputDump->toPlainText());
 			qDebug("Writing %d dump bytes to text2pcap", ba.size());
@@ -201,6 +211,8 @@ void PktView::when_t2p_started()
 
 void PktView::when_t2p_finished()
 {
+	QString fmt;
+
 	qDebug("text2pcap finished (view = %d)", view);
 
 	packetModel->clear();
@@ -231,6 +243,7 @@ void PktView::when_t2p_finished()
 			ts.start(extProg, QStringList() << QString("-r%1").arg(
 				pcapFile->fileName()));
 			break;
+		case vw_text:
 		case vw_xml:
 			//ts.setStandardOutputFile(xmlFile->fileName(), QIODevice::Append);
 			if (xmlFile)
@@ -243,8 +256,10 @@ void PktView::when_t2p_finished()
 			ts.readAll();
 			qDebug("Starting %s ...", tsProg.toAscii().constData());
 
+			fmt = (view == vw_xml)?"-Tpdml":"-V";
+
 			ts.start(tsProg, QStringList(qAppSettings->value(
-				"TsharkExtraArgs").toString()) << "-Tpdml" << QString("-r%1").arg(
+				"TsharkExtraArgs").toString()) << fmt << QString("-r%1").arg(
 				pcapFile->fileName()));
 			break;
 		default:
@@ -266,6 +281,7 @@ void PktView::when_ts_started()
 			tbViewExternal->setEnabled(true);
 			view = vw_none;
 			break;
+		case vw_text:
 		case vw_xml:
 			break;
 		default:
@@ -297,6 +313,7 @@ void PktView::when_ts_readyRead()
 			// DO Nothing
 			Q_UNREACHABLE();
 			break;
+		case vw_text:
 		case vw_xml:
 		{
 			char buf[1024];
@@ -360,6 +377,7 @@ void PktView::when_ts_finished()
 		case vw_external:
 			// Do Nothing!
 			break;
+		case vw_text:
 		case vw_xml:
 		{
 			char buf[1024];
@@ -373,11 +391,14 @@ void PktView::when_ts_finished()
 			} while (n > 0);
 			xmlFile->flush();
 
-			view = vw_none;
 			QProcess::startDetached(textViewerProg, 
 					QStringList() << xmlFile->fileName());
 			tvPktTree->setEnabled(true);
-			tbViewXml->setEnabled(true);
+			if (view == vw_xml)
+				tbViewXml->setEnabled(true);
+			else
+				tbViewText->setEnabled(true);
+			view = vw_none;
 		}
 			break;
 		default:
