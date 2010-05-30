@@ -33,10 +33,14 @@ HexDumpEdit::HexDumpEdit(QWidget* parent)
 	_isEmpty = false;
 	setupUi(this);
 
+	teOffset->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	teInput->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	teAscii->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
 	setFont(QFont("Courier"));
 	w = fontMetrics().width('X');
 	teOffset->setMinimumWidth(w * (4 + 1));
-	teAscii->setMinimumWidth(w * (16 + 1));
+	teAscii->setMinimumWidth(w * (18 + 1));
 
 	connect(teOffset->verticalScrollBar(), SIGNAL(valueChanged(int)),
 		teInput->verticalScrollBar(), SLOT(setValue(int)));

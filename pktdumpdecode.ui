@@ -59,6 +59,19 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="tbViewText" >
+        <property name="text" >
+         <string>   Text   </string>
+        </property>
+        <property name="icon" >
+         <iconset resource="pdd.qrc" >:/icons/icons/view_text.png</iconset>
+        </property>
+        <property name="toolButtonStyle" >
+         <enum>Qt::ToolButtonTextUnderIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="tbViewXml" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
