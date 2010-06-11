@@ -129,6 +129,7 @@ void PktView::textViewerVerified(bool isVerified)
 {
 	qDebug("Text Viewer verified = %d", isVerified);
 	textViewerProg = qAppSettings->value("TextViewer").toString();
+	tbViewText->setEnabled(isVerified);
 	tbViewXml->setEnabled(isVerified);
 }
 
@@ -137,7 +138,6 @@ void PktView::start_t2p()
 	qDebug("%s", __FUNCTION__);
 
 	tvPktTree->setDisabled(true);
-	tvPktTree->show();
 
 	//t2p.setProcessChannelMode(QProcess::MergedChannels);
 
@@ -155,6 +155,7 @@ void PktView::on_tbDecode_clicked()
 
 	view = vw_internal;
 	tbDecode->setDisabled(true);
+	tvPktTree->show();
 	start_t2p();
 }
 
@@ -164,6 +165,7 @@ void PktView::on_tbViewExternal_clicked()
 
 	view = vw_external;
 	tbViewExternal->setDisabled(true);
+	tvPktTree->hide();
 	start_t2p();
 }
 
@@ -173,6 +175,7 @@ void PktView::on_tbViewText_clicked()
 
 	view = vw_text;
 	tbViewText->setDisabled(true);
+	tvPktTree->hide();
 	start_t2p();
 }
 
@@ -182,6 +185,7 @@ void PktView::on_tbViewXml_clicked()
 
 	view = vw_xml;
 	tbViewXml->setDisabled(true);
+	tvPktTree->hide();
 	start_t2p();
 }
 
@@ -237,11 +241,11 @@ void PktView::when_t2p_finished()
 				pcapFile->fileName()));
 			break;
 		case vw_external:
-			ts.setStandardErrorFile(logFile, QIODevice::Append);
 			qDebug("Starting %s ...", extProg.toAscii().constData());
-
-			ts.start(extProg, QStringList() << QString("-r%1").arg(
-				pcapFile->fileName()));
+			QProcess::startDetached(extProg, 
+				QStringList() << QString("-r%1").arg(
+					pcapFile->fileName()));
+			tbViewExternal->setEnabled(true);
 			break;
 		case vw_text:
 		case vw_xml:
