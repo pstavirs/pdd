@@ -94,6 +94,8 @@ void HexDumpEdit::on_teInput_textChanged()
 
 	qDebug("In %s", __FUNCTION__);
 
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
 	_text.clear();
 
 	t = teInput->toPlainText();
@@ -222,4 +224,5 @@ void HexDumpEdit::on_teInput_textChanged()
 		}
 	}
 
+	QApplication::restoreOverrideCursor();
 }

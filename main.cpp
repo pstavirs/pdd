@@ -90,7 +90,8 @@ int main(int argc, char *argv[])
 	pktView->snifferVerified(snifferVerified);
 	pktView->textViewerVerified(textViewerVerified);
 	pktView->setWindowFlags(
-		  Qt::WindowMaximizeButtonHint 
+		  Qt::WindowCloseButtonHint
+		| Qt::WindowMaximizeButtonHint 
 		| Qt::WindowMinimizeButtonHint);
     pktView->show();
     status = app.exec();
