@@ -89,10 +89,7 @@ int main(int argc, char *argv[])
 	pktView = new PktView;
 	pktView->snifferVerified(snifferVerified);
 	pktView->textViewerVerified(textViewerVerified);
-	pktView->setWindowFlags(
-		  Qt::WindowCloseButtonHint
-		| Qt::WindowMaximizeButtonHint 
-		| Qt::WindowMinimizeButtonHint);
+	pktView->setWindowFlags(Qt::Window);
     pktView->show();
     status = app.exec();
 	delete qAppSettings;
