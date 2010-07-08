@@ -22,13 +22,5 @@ SOURCES = \
 	main.cpp \
 	settings.cpp
 
-QMAKE_EXTRA_TARGETS += revtarget
-PRE_TARGETDEPS      += version.h
-revtarget.target     = version.h
-win32:revtarget.commands   = @echo "const char *version = \"0.2\";" \
-	"const char *revision = \"$(shell svnversion .)\";" > $$revtarget.target
-unix:revtarget.commands = @echo "\"const char *version = \\\"0.2\\\";" \
-	"const char *revision = \\\"$(shell svnversion .)\\\";\"" > $$revtarget.target
-
-revtarget.depends = $$SOURCES $$HEADERS $$FORMS
+include (version.pri)
 

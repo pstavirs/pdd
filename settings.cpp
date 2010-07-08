@@ -26,7 +26,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 #include <QMessageBox>
 
 #include "common.h"
-#include "version.h"
+
+extern char* version;
+extern char* revision;
 
 extern QSettings *qAppSettings;
 
