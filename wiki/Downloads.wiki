@@ -1,4 +1,5 @@
 #summary Binary and Source Downloads for Packet Dump Decode
+#labels Deprecated
 
 =Downloads=
 ==Binary (Windows 32-bit)==
