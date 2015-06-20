@@ -1,4 +1,4 @@
-## Packet Dump Decode
+# Packet Dump Decode
 Packet Dump Decode (pdd) is a simple convenient GUI wrapper around the Wireshark/Ethereal tools to convert packet hexdumps into well formatted xml containing the decoded protocols and protocol contents
 
 Using pdd, you just need to copy-paste the hexdump into pdd and hit the "Decode" button.
@@ -14,10 +14,15 @@ NOTE: _pdd is only a wrapper around the Wireshark/Ethereal tools and hence needs
 **Screencast** (of an old version which only supported decode to tree-view) -
 ![PDD Screencast](https://raw.githubusercontent.com/pstavirs/pdd/master/icons/pdd_screencast.gif)
 
+# Downloads
 Win32 Binary and Source downloads are available at [BinTray](https://bintray.com/pstavirs/pdd)
-
 To compile from source, you need Qt4 development libraries. To build -
 ```
 $ qmake
 $ make
 ```
+# License
+PDD is licensed under [http://www.gnu.org/licenses/gpl-3.0.en.html](GPLv3)
+
+# Support
+[https://groups.google.com/group/pdd-support](pdd-suport googlegroup)
