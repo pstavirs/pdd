@@ -22,7 +22,7 @@ $ qmake
 $ make
 ```
 # License
-PDD is licensed under [http://www.gnu.org/licenses/gpl-3.0.en.html](GPLv3)
+PDD is licensed under [GPLv3](http://www.gnu.org/licenses/gpl-3.0.en.html)
 
 # Support
-[https://groups.google.com/group/pdd-support](pdd-suport googlegroup)
+[pdd-support googlegroup](https://groups.google.com/group/pdd-support)
