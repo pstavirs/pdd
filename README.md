@@ -14,7 +14,7 @@ NOTE: _pdd is only a wrapper around the Wireshark/Ethereal tools and hence needs
 **Screencast** (of an old version which only supported decode to tree-view) -
 ![PDD Screencast](https://raw.githubusercontent.com/pstavirs/pdd/master/icons/pdd_screencast.gif)
 
-Win32 Binary and Source downloads are available at [GoogleCode](http://code.google.com/p/pdd/downloads/list)
+Win32 Binary and Source downloads are available at [BinTray](https://bintray.com/pstavirs/pdd)
 
 To compile from source, you need Qt4 development libraries. To build -
 ```
